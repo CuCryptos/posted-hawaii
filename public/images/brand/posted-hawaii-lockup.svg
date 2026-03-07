@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 280" width="600" height="280">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@900&amp;display=swap');
+    </style>
+  </defs>
+  <rect width="600" height="280" fill="#0D0D0D"/>
+  <!-- POSTED wordmark: ultra-bold, condensed via transform, tight tracking -->
+  <text
+    x="300" y="165"
+    font-family="'DM Sans', sans-serif"
+    font-weight="900"
+    font-size="180"
+    fill="white"
+    text-anchor="middle"
+    letter-spacing="-6"
+    transform="scale(0.62, 1) translate(183, 0)"
+  >POSTED</text>
+  <!-- HAWAI'I location identifier: manually kerned for even spacing -->
+  <text y="225" font-family="'DM Sans', sans-serif" font-weight="500" font-size="32" fill="white" text-anchor="middle">
+    <tspan x="300" letter-spacing="12">HAWA</tspan><tspan letter-spacing="6">I</tspan><tspan letter-spacing="6">&#x02BB;</tspan><tspan letter-spacing="12">I</tspan>
+  </text>
+</svg>

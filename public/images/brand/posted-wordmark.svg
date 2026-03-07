@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200" width="600" height="200">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@900&amp;display=swap');
+    </style>
+  </defs>
+  <rect width="600" height="200" fill="#0D0D0D"/>
+  <text
+    x="300" y="145"
+    font-family="'DM Sans', sans-serif"
+    font-weight="900"
+    font-size="180"
+    fill="white"
+    text-anchor="middle"
+    letter-spacing="-6"
+    transform="scale(0.62, 1) translate(183, 0)"
+  >POSTED</text>
+</svg>
