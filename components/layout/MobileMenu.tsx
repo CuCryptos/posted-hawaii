@@ -4,14 +4,14 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { NAV_LINKS } from '@/lib/constants'
 
-export function MobileMenu() {
+export function MobileMenu({ scrolled }: { scrolled: boolean }) {
   const [open, setOpen] = useState(false)
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className="lg:hidden font-display text-asphalt"
+        className={`lg:hidden font-display p-2 -m-2 transition-colors ${scrolled ? 'text-asphalt' : 'text-white'}`}
         aria-label="Open menu"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -27,7 +27,7 @@ export function MobileMenu() {
           <div className="absolute right-0 top-0 h-full w-72 bg-cream p-8 shadow-xl">
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-6 right-6 text-asphalt"
+              className="absolute top-6 right-6 text-asphalt p-2 -m-2"
               aria-label="Close menu"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -41,7 +41,7 @@ export function MobileMenu() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="font-display font-bold text-2xl uppercase tracking-wider text-asphalt hover:text-coral transition-colors"
+                  className="font-display font-bold text-xl uppercase tracking-wider text-asphalt hover:text-coral transition-colors py-3"
                 >
                   {link.label}
                 </Link>

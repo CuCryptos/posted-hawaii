@@ -21,7 +21,7 @@ export function AnnouncementBar() {
           setDismissed(true)
           localStorage.setItem('announcement-dismissed', 'true')
         }}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white"
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-2 -m-2"
         aria-label="Dismiss announcement"
       >
         ✕
