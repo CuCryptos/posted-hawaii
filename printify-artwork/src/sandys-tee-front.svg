@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4500" height="6026" viewBox="0 0 4500 6026">
+  <!-- Sandy's Tee Front — Bold POSTED with wave accent -->
+  <!-- For dark garment — dark text with coral wave -->
+
+  <!-- POSTED — bold black -->
+  <text x="2250" y="2800" font-family="'DM Sans', 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="900" fill="#0D0D0D" text-anchor="middle" letter-spacing="20">POSTED</text>
+
+  <!-- Coral wave accent — smooth curve beneath text -->
+  <path d="M 800 3050 Q 1200 2900, 1600 3050 T 2400 3050 T 3200 3050 T 3700 3050" stroke="#C4705A" stroke-width="14" fill="none" stroke-linecap="round"/>
+</svg>

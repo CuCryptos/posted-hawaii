@@ -8,6 +8,7 @@ import { MobileMenu } from './MobileMenu'
 const NAV_LEFT = [
   { label: 'Shop', href: '/shop' },
   { label: 'Drops', href: '/drops' },
+  { label: 'Blog', href: '/blog' },
   { label: 'About', href: '/about' },
 ]
 
@@ -48,9 +49,9 @@ export function Navbar() {
           <Image
             src="/images/brand/posted-wordmark.svg"
             alt="POSTED"
-            width={120}
-            height={32}
-            className={`h-6 w-auto transition-all duration-300 ${scrolled ? 'invert' : ''}`}
+            width={160}
+            height={40}
+            className={`h-9 md:h-10 w-auto transition-all duration-300 ${scrolled ? 'invert drop-shadow-none' : 'drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]'}`}
             priority
           />
         </Link>
@@ -78,14 +79,14 @@ export function Navbar() {
           </Link>
           <button
             aria-label="Cart"
-            className={`p-2 -m-2 relative transition-colors ${scrolled ? 'text-asphalt' : 'text-white'}`}
+            className={`snipcart-checkout p-2 -m-2 relative transition-colors ${scrolled ? 'text-asphalt' : 'text-white'}`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
-            <span className="absolute -top-1 -right-1 bg-coral text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+            <span className="snipcart-items-count absolute -top-1 -right-1 bg-coral text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center" />
           </button>
         </div>
 

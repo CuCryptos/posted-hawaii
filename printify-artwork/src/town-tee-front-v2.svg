@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4500" height="5400" viewBox="0 0 4500 5400">
+  <!-- Town Tee Front — White POSTED framed with coral lines, coral HAWAI'I -->
+  <!-- For dark garment (black tee) — white/coral print -->
+
+  <!-- Top coral accent line -->
+  <line x1="1100" y1="2050" x2="3400" y2="2050" stroke="#C4705A" stroke-width="10"/>
+
+  <!-- POSTED — bold white -->
+  <text x="2250" y="2400" font-family="'DM Sans', 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="620" fill="#FFFFFF" text-anchor="middle" letter-spacing="30">POSTED</text>
+
+  <!-- Bottom coral accent line -->
+  <line x1="1100" y1="2520" x2="3400" y2="2520" stroke="#C4705A" stroke-width="10"/>
+
+  <!-- HAWAI'I in coral -->
+  <text x="2250" y="2780" font-family="'DM Sans', 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="320" fill="#C4705A" text-anchor="middle" letter-spacing="40">HAWAI&#x02BB;I</text>
+</svg>

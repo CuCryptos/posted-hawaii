@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -9,6 +9,8 @@ type LookbookItem = {
   name: string
   price: number
   href: string
+  printifyProductId?: string
+  printifyVariantId?: string
 }
 
 type LookbookDrawerProps = {
@@ -17,7 +19,11 @@ type LookbookDrawerProps = {
   item: LookbookItem | null
 }
 
+const SIZES = ['S', 'M', 'L', 'XL', '2XL'] as const
+
 export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
+  const [selectedSize, setSelectedSize] = useState<string>('M')
+
   // Lock body scroll when open
   useEffect(() => {
     if (open) {
@@ -77,19 +83,39 @@ export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
             </p>
           </div>
 
-          {/* Size selector placeholder */}
+          {/* Size selector */}
           <div className="mt-6 flex gap-2">
-            {['S', 'M', 'L', 'XL', '2XL'].map((size) => (
+            {SIZES.map((size) => (
               <button
                 key={size}
-                className="w-11 h-11 border border-asphalt/20 font-display text-[11px] text-asphalt hover:border-asphalt transition-colors"
+                onClick={() => setSelectedSize(size)}
+                className={`w-11 h-11 border font-display text-[11px] transition-colors ${
+                  selectedSize === size
+                    ? 'border-asphalt bg-asphalt text-cream'
+                    : 'border-asphalt/20 text-asphalt hover:border-asphalt'
+                }`}
               >
                 {size}
               </button>
             ))}
           </div>
 
-          <button className="w-full mt-6 bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-5 hover:bg-coral/90 transition-colors">
+          <button
+            className="snipcart-add-item w-full mt-6 bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-5 hover:bg-coral/90 transition-colors"
+            data-item-id={`${item.href}-${selectedSize}`}
+            data-item-name={item.name}
+            data-item-price={item.price}
+            data-item-url={item.href}
+            data-item-image={item.image}
+            data-item-custom1-name="Size"
+            data-item-custom1-value={selectedSize}
+            data-item-custom2-name="printify_product_id"
+            data-item-custom2-value={item.printifyProductId || ''}
+            data-item-custom2-type="hidden"
+            data-item-custom3-name="printify_variant_id"
+            data-item-custom3-value={item.printifyVariantId || ''}
+            data-item-custom3-type="hidden"
+          >
             Add to Bag
           </button>
 

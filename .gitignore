@@ -40,3 +40,19 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .playwright-cli/
+
+# generated/downloaded images (large, not source)
+/generated-images/
+/printify-mockups/
+
+# printify artwork intermediate files (keep src/ SVGs and output/ finals)
+/printify-artwork/*.png
+/printify-artwork/*.psd
+/printify-artwork/*.svg
+
+# agent/skill artifacts
+.agent/
+.agents/
+.claude/skills/
+/skills/
+skills-lock.json

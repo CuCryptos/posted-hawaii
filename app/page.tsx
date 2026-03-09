@@ -4,6 +4,7 @@ import { CollectionHero } from '@/components/home/CollectionHero'
 import { LookbookGrid } from '@/components/home/LookbookGrid'
 import { ProductCarousel } from '@/components/home/ProductCarousel'
 import { EmailSignup } from '@/components/home/EmailSignup'
+import { LatestPosts } from '@/components/home/LatestPosts'
 import { COLLECTIONS, LOOKBOOK_POSTED_UP, LOOKBOOK_POSTED_LATE } from '@/lib/constants'
 
 export default function Home() {
@@ -43,6 +44,9 @@ export default function Home() {
 
         {/* Products */}
         <ProductCarousel />
+
+        {/* Blog */}
+        <LatestPosts />
 
         {/* Signup */}
         <EmailSignup />

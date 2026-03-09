@@ -82,7 +82,7 @@ export const FEATURED_PRODUCTS = [
     price: 42,
     image: '/images/products/sandys-tee-teal.png',
     altImage: '/images/products/sandys-tee-teal.png',
-    href: '/shop/the-sandys-tee',
+    href: '/shop/the-sandys-tee-teal',
   },
   {
     name: 'The Bonfire Hoodie',
@@ -96,5 +96,6 @@ export const FEATURED_PRODUCTS = [
 export const NAV_LINKS = [
   { label: 'Shop', href: '/shop' },
   { label: 'Drops', href: '/drops' },
+  { label: 'Blog', href: '/blog' },
   { label: 'About', href: '/about' },
 ] as const
