@@ -1,35 +1,76 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Image from 'next/image'
-import type { Product } from '@/lib/products'
+import type { ShopifyProduct, ShopifyProductVariant } from '@/lib/shopify-types'
+import { useCart } from '@/components/cart/CartProvider'
 
-export function ProductDetail({ product }: { product: Product }) {
-  const [selectedColor, setSelectedColor] = useState(0)
-  const [selectedSize, setSelectedSize] = useState(
-    product.sizes.includes('M') ? 'M' : product.sizes[0]
-  )
+export function ProductDetail({ product }: { product: ShopifyProduct }) {
+  const { addToCart, loading } = useCart()
+  const variants = product.variants.edges.map((e) => e.node)
+  const images = product.images.edges.map((e) => e.node)
+
+  // Extract unique options (e.g., Size, Color)
+  const options = useMemo(() => {
+    const map = new Map<string, string[]>()
+    for (const v of variants) {
+      for (const opt of v.selectedOptions) {
+        if (!map.has(opt.name)) map.set(opt.name, [])
+        const values = map.get(opt.name)!
+        if (!values.includes(opt.value)) values.push(opt.value)
+      }
+    }
+    return Array.from(map.entries()).map(([name, values]) => ({ name, values }))
+  }, [variants])
+
+  // Track selected option values
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
+    const defaults: Record<string, string> = {}
+    for (const opt of options) {
+      if (opt.name === 'Size' && opt.values.includes('M')) {
+        defaults[opt.name] = 'M'
+      } else {
+        defaults[opt.name] = opt.values[0]
+      }
+    }
+    return defaults
+  })
+
   const [selectedImage, setSelectedImage] = useState(0)
 
-  const currentColor = product.colors[selectedColor]
+  // Find the matching variant
+  const selectedVariant: ShopifyProductVariant | undefined = useMemo(() => {
+    return variants.find((v) =>
+      v.selectedOptions.every((opt) => selectedOptions[opt.name] === opt.value)
+    )
+  }, [variants, selectedOptions])
+
+  const price = selectedVariant?.price.amount ?? product.priceRange.minVariantPrice.amount
+
+  async function handleAddToCart() {
+    if (!selectedVariant) return
+    await addToCart(selectedVariant.id)
+  }
 
   return (
     <div className="lg:grid lg:grid-cols-2 lg:gap-16">
       {/* Image gallery */}
       <div>
         <div className="relative aspect-square overflow-hidden bg-warm-sand">
-          <Image
-            src={product.images[selectedImage] || currentColor.image}
-            alt={`${product.name} — ${currentColor.name}`}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            priority
-          />
+          {images[selectedImage] && (
+            <Image
+              src={images[selectedImage].url}
+              alt={images[selectedImage].altText || product.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              priority
+            />
+          )}
         </div>
-        {product.images.length > 1 && (
+        {images.length > 1 && (
           <div className="flex gap-2 mt-3">
-            {product.images.map((img, i) => (
+            {images.map((img, i) => (
               <button
                 key={i}
                 onClick={() => setSelectedImage(i)}
@@ -38,8 +79,8 @@ export function ProductDetail({ product }: { product: Product }) {
                 }`}
               >
                 <Image
-                  src={img}
-                  alt={`${product.name} view ${i + 1}`}
+                  src={img.url}
+                  alt={img.altText || `${product.title} view ${i + 1}`}
                   fill
                   className="object-cover"
                   sizes="64px"
@@ -53,98 +94,56 @@ export function ProductDetail({ product }: { product: Product }) {
       {/* Product info */}
       <div className="mt-8 lg:mt-0">
         <h1 className="font-display font-black text-[1.75rem] uppercase tracking-tight text-asphalt">
-          {product.name}
+          {product.title}
         </h1>
         <p className="font-display text-[15px] text-asphalt/60 mt-2">
-          ${product.price}
+          ${parseFloat(price).toFixed(0)}
         </p>
 
         <p className="font-body text-[15px] text-asphalt/80 mt-6 leading-relaxed">
           {product.description}
         </p>
 
-        {/* Color selector */}
-        {product.colors.length > 1 && (
-          <div className="mt-8">
+        {/* Option selectors */}
+        {options.map((option) => (
+          <div key={option.name} className="mt-8">
             <p className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt mb-3">
-              Color — {currentColor.name}
+              {option.name}{option.name === 'Color' ? ` — ${selectedOptions[option.name]}` : ''}
             </p>
             <div className="flex gap-2">
-              {product.colors.map((color, i) => (
+              {option.values.map((value) => (
                 <button
-                  key={color.name}
-                  onClick={() => {
-                    setSelectedColor(i)
-                    setSelectedImage(i)
-                  }}
-                  className={`w-10 h-10 rounded-full border-2 transition-colors ${
-                    selectedColor === i ? 'border-asphalt' : 'border-asphalt/10'
+                  key={value}
+                  onClick={() =>
+                    setSelectedOptions((prev) => ({ ...prev, [option.name]: value }))
+                  }
+                  className={`${
+                    option.name === 'Size' ? 'w-12 h-12' : 'px-4 h-12'
+                  } border font-display text-[12px] transition-colors ${
+                    selectedOptions[option.name] === value
+                      ? 'border-asphalt bg-asphalt text-cream'
+                      : 'border-asphalt/20 text-asphalt hover:border-asphalt'
                   }`}
-                  style={{ backgroundColor: color.hex }}
-                  aria-label={color.name}
-                />
+                >
+                  {value}
+                </button>
               ))}
             </div>
           </div>
-        )}
-
-        {/* Size selector */}
-        <div className="mt-8">
-          <p className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt mb-3">
-            Size
-          </p>
-          <div className="flex gap-2">
-            {product.sizes.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`w-12 h-12 border font-display text-[12px] transition-colors ${
-                  selectedSize === size
-                    ? 'border-asphalt bg-asphalt text-cream'
-                    : 'border-asphalt/20 text-asphalt hover:border-asphalt'
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-        </div>
+        ))}
 
         {/* Add to bag */}
         <button
-          className="snipcart-add-item w-full mt-8 bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-5 hover:bg-coral/90 transition-colors"
-          data-item-id={`${product.slug}-${currentColor.name}-${selectedSize}`}
-          data-item-name={product.name}
-          data-item-price={product.price}
-          data-item-url={`/shop/${product.slug}`}
-          data-item-image={currentColor.image}
-          data-item-custom1-name="Size"
-          data-item-custom1-value={selectedSize}
-          data-item-custom2-name="Color"
-          data-item-custom2-value={currentColor.name}
-          data-item-custom3-name="printify_product_id"
-          data-item-custom3-value={product.printifyProductId || ''}
-          data-item-custom3-type="hidden"
+          onClick={handleAddToCart}
+          disabled={loading || !selectedVariant?.availableForSale}
+          className="w-full mt-8 bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-5 hover:bg-coral/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Add to Bag — ${product.price}
+          {!selectedVariant?.availableForSale
+            ? 'Sold Out'
+            : loading
+              ? 'Adding...'
+              : `Add to Bag — $${parseFloat(price).toFixed(0)}`}
         </button>
-
-        {/* Details */}
-        <div className="mt-10 pt-8 border-t border-asphalt/10">
-          <p className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt mb-4">
-            Details
-          </p>
-          <ul className="space-y-2">
-            {product.details.map((detail) => (
-              <li
-                key={detail}
-                className="font-body text-[14px] text-asphalt/70 leading-relaxed"
-              >
-                {detail}
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
     </div>
   )

@@ -3,14 +3,14 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useCart } from '@/components/cart/CartProvider'
 
 type LookbookItem = {
   image: string
   name: string
   price: number
   href: string
-  printifyProductId?: string
-  printifyVariantId?: string
+  variantId?: string
 }
 
 type LookbookDrawerProps = {
@@ -19,10 +19,9 @@ type LookbookDrawerProps = {
   item: LookbookItem | null
 }
 
-const SIZES = ['S', 'M', 'L', 'XL', '2XL'] as const
-
 export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
-  const [selectedSize, setSelectedSize] = useState<string>('M')
+  const { addToCart, loading } = useCart()
+  const [added, setAdded] = useState(false)
 
   // Lock body scroll when open
   useEffect(() => {
@@ -34,7 +33,18 @@ export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
+  // Reset "added" state when item changes
+  useEffect(() => {
+    setAdded(false)
+  }, [item])
+
   if (!item) return null
+
+  async function handleAdd() {
+    if (!item?.variantId) return
+    await addToCart(item.variantId)
+    setAdded(true)
+  }
 
   return (
     <div
@@ -83,41 +93,22 @@ export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
             </p>
           </div>
 
-          {/* Size selector */}
-          <div className="mt-6 flex gap-2">
-            {SIZES.map((size) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`w-11 h-11 border font-display text-[11px] transition-colors ${
-                  selectedSize === size
-                    ? 'border-asphalt bg-asphalt text-cream'
-                    : 'border-asphalt/20 text-asphalt hover:border-asphalt'
-                }`}
-              >
-                {size}
-              </button>
-            ))}
-          </div>
-
-          <button
-            className="snipcart-add-item w-full mt-6 bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-5 hover:bg-coral/90 transition-colors"
-            data-item-id={`${item.href}-${selectedSize}`}
-            data-item-name={item.name}
-            data-item-price={item.price}
-            data-item-url={item.href}
-            data-item-image={item.image}
-            data-item-custom1-name="Size"
-            data-item-custom1-value={selectedSize}
-            data-item-custom2-name="printify_product_id"
-            data-item-custom2-value={item.printifyProductId || ''}
-            data-item-custom2-type="hidden"
-            data-item-custom3-name="printify_variant_id"
-            data-item-custom3-value={item.printifyVariantId || ''}
-            data-item-custom3-type="hidden"
-          >
-            Add to Bag
-          </button>
+          {item.variantId ? (
+            <button
+              onClick={handleAdd}
+              disabled={loading}
+              className="w-full mt-6 bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-5 hover:bg-coral/90 transition-colors disabled:opacity-50"
+            >
+              {added ? 'Added!' : loading ? 'Adding...' : 'Add to Bag'}
+            </button>
+          ) : (
+            <Link
+              href={item.href}
+              className="block w-full mt-6 bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-5 text-center hover:bg-coral/90 transition-colors"
+            >
+              View Options
+            </Link>
+          )}
 
           <Link
             href={item.href}

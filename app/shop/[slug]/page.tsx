@@ -4,34 +4,38 @@ import { Footer } from '@/components/layout/Footer'
 import { Container } from '@/components/ui/Container'
 import { ProductDetail } from '@/components/shop/ProductDetail'
 import { ProductCard } from '@/components/shop/ProductCard'
-import { getProductBySlug, PRODUCTS } from '@/lib/products'
+import { getProductByHandle, getProducts } from '@/lib/shopify'
+
+export const revalidate = 60
 
 type Props = {
   params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
-  return PRODUCTS.map((p) => ({ slug: p.slug }))
+  const products = await getProducts()
+  return products.map((p) => ({ slug: p.handle }))
 }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const product = getProductBySlug(slug)
+  const product = await getProductByHandle(slug)
   if (!product) return {}
   return {
-    title: `${product.name} — POSTED HAWAI\u02BBI`,
+    title: `${product.title} — POSTED HAWAI\u02BBI`,
     description: product.description,
   }
 }
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params
-  const product = getProductBySlug(slug)
+  const product = await getProductByHandle(slug)
   if (!product) notFound()
 
-  const related = PRODUCTS.filter(
-    (p) => p.category === product.category && p.slug !== product.slug
-  ).slice(0, 4)
+  const allProducts = await getProducts()
+  const related = allProducts
+    .filter((p) => p.productType === product.productType && p.handle !== product.handle)
+    .slice(0, 4)
 
   return (
     <>
@@ -48,7 +52,7 @@ export default async function ProductPage({ params }: Props) {
               </h2>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 {related.map((p) => (
-                  <ProductCard key={p.slug} product={p} />
+                  <ProductCard key={p.handle} product={p} />
                 ))}
               </div>
             </section>
