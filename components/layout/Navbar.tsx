@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { MobileMenu } from './MobileMenu'
+import { useCart } from '@/components/cart/CartProvider'
 
 const NAV_LEFT = [
   { label: 'Shop', href: '/shop' },
@@ -14,6 +15,9 @@ const NAV_LEFT = [
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
+  const { cart } = useCart()
+
+  const itemCount = cart?.totalQuantity ?? 0
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -77,17 +81,22 @@ export function Navbar() {
               <circle cx="12" cy="7" r="4" />
             </svg>
           </Link>
-          <button
+          <Link
+            href="/cart"
             aria-label="Cart"
-            className={`snipcart-checkout p-2 -m-2 relative transition-colors ${scrolled ? 'text-asphalt' : 'text-white'}`}
+            className={`p-2 -m-2 relative transition-colors ${scrolled ? 'text-asphalt' : 'text-white'}`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
-            <span className="snipcart-items-count absolute -top-1 -right-1 bg-coral text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center" />
-          </button>
+            {itemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-coral text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {itemCount}
+              </span>
+            )}
+          </Link>
         </div>
 
         <MobileMenu scrolled={scrolled} />
