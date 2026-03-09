@@ -7,9 +7,9 @@ const FOOTER_COLUMNS = [
     title: 'Shop',
     links: [
       { label: 'All', href: '/shop' },
-      { label: 'Tees', href: '/shop/tees' },
-      { label: 'Hoodies', href: '/shop/hoodies' },
-      { label: 'Caps', href: '/shop/caps' },
+      { label: 'Tees', href: '/shop' },
+      { label: 'Hoodies', href: '/shop' },
+      { label: 'Caps', href: '/shop' },
     ],
   },
   {
@@ -21,10 +21,10 @@ const FOOTER_COLUMNS = [
     ],
   },
   {
-    title: 'Policies',
+    title: 'Info',
     links: [
-      { label: 'Privacy', href: '/privacy' },
-      { label: 'Terms', href: '/terms' },
+      { label: 'Blog', href: '/blog' },
+      { label: 'Contact', href: '/contact' },
     ],
   },
   {

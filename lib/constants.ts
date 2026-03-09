@@ -12,23 +12,23 @@ export const COLLECTIONS = [
     name: 'POSTED UP',
     description: 'The tees, the caps, the staples your crew reaches for first.',
     image: '/images/hero/homepage-hero.png',
-    shopHref: '/shop?collection=posted-up',
-    lookHref: '/blog/posted-up-drop-001',
+    shopHref: '/shop',
+    lookHref: '/blog/drop-001-posted-up',
   },
   {
     id: 'posted-late',
     name: 'POSTED LATE',
     description: 'When the sun drops and the fits level up.',
     image: '/images/lifestyle/kakaako-hoodie.png',
-    shopHref: '/shop?collection=posted-late',
-    lookHref: '/blog/posted-late-drop-001',
+    shopHref: '/shop',
+    lookHref: '/blog',
   },
   {
     id: 'posted-early',
     name: 'POSTED EARLY',
     description: 'Built for the morning session and everything after.',
     image: '/images/products/sandys-tee-teal.png',
-    shopHref: '/shop?collection=posted-early',
+    shopHref: '/shop',
   },
 ]
 
@@ -41,17 +41,17 @@ export type LookbookItem = {
 }
 
 export const LOOKBOOK_POSTED_UP: LookbookItem[] = [
-  { image: '/images/products/sandys-tee-black.png', name: "The Sandy's Tee", price: 42, href: '/shop/the-sandys-tee' },
-  { image: '/images/products/town-tee-coral.png', name: 'The Town Tee', price: 42, href: '/shop/the-town-tee' },
-  { image: '/images/products/og-cap-black.png', name: 'The OG Cap', price: 38, href: '/shop/the-og-cap' },
-  { image: '/images/products/sandys-tee-teal.png', name: "The Sandy's Tee — Teal", price: 42, href: '/shop/the-sandys-tee' },
+  { image: '/images/products/sandys-tee-black.png', name: "The Sandy's Tee", price: 42, href: '/shop' },
+  { image: '/images/products/town-tee-coral.png', name: 'The Town Tee', price: 42, href: '/shop' },
+  { image: '/images/products/og-cap-black.png', name: 'The OG Cap', price: 38, href: '/shop' },
+  { image: '/images/products/sandys-tee-teal.png', name: "The Sandy's Tee — Teal", price: 42, href: '/shop' },
 ]
 
 export const LOOKBOOK_POSTED_LATE: LookbookItem[] = [
-  { image: '/images/lifestyle/kakaako-hoodie.png', name: 'The Bonfire Hoodie', price: 85, href: '/shop/the-bonfire-hoodie' },
-  { image: '/images/products/sandys-tee-black.png', name: "The Sandy's Tee", price: 42, href: '/shop/the-sandys-tee' },
-  { image: '/images/products/og-cap-black.png', name: 'The OG Cap', price: 38, href: '/shop/the-og-cap' },
-  { image: '/images/products/town-tee-coral.png', name: 'The Town Tee', price: 42, href: '/shop/the-town-tee' },
+  { image: '/images/lifestyle/kakaako-hoodie.png', name: 'The Bonfire Hoodie', price: 85, href: '/shop' },
+  { image: '/images/products/sandys-tee-black.png', name: "The Sandy's Tee", price: 42, href: '/shop' },
+  { image: '/images/products/og-cap-black.png', name: 'The OG Cap', price: 38, href: '/shop' },
+  { image: '/images/products/town-tee-coral.png', name: 'The Town Tee', price: 42, href: '/shop' },
 ]
 
 // Product carousel items
@@ -61,35 +61,35 @@ export const FEATURED_PRODUCTS = [
     price: 42,
     image: '/images/products/sandys-tee-black.png',
     altImage: '/images/products/sandys-tee-black.png',
-    href: '/shop/the-sandys-tee',
+    href: '/shop',
   },
   {
     name: 'The Town Tee',
     price: 42,
     image: '/images/products/town-tee-coral.png',
     altImage: '/images/products/town-tee-coral.png',
-    href: '/shop/the-town-tee',
+    href: '/shop',
   },
   {
     name: 'The OG Cap',
     price: 38,
     image: '/images/products/og-cap-black.png',
     altImage: '/images/products/og-cap-black.png',
-    href: '/shop/the-og-cap',
+    href: '/shop',
   },
   {
     name: "The Sandy's Tee — Teal",
     price: 42,
     image: '/images/products/sandys-tee-teal.png',
     altImage: '/images/products/sandys-tee-teal.png',
-    href: '/shop/the-sandys-tee-teal',
+    href: '/shop',
   },
   {
     name: 'The Bonfire Hoodie',
     price: 85,
     image: '/images/lifestyle/kakaako-hoodie.png',
     altImage: '/images/lifestyle/kakaako-hoodie.png',
-    href: '/shop/the-bonfire-hoodie',
+    href: '/shop',
   },
 ]
 
