@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import Image from 'next/image'
 import type { ShopifyProduct, ShopifyProductVariant } from '@/lib/shopify-types'
 import { useCart } from '@/components/cart/CartProvider'
+import { DROPS } from '@/lib/drops'
 
 const COLOR_MAP: Record<string, string> = {
   Black: '#0D0D0D',
@@ -179,10 +180,16 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
 
       {/* Right — Product Info */}
       <div className="lg:sticky lg:top-24 lg:self-start">
-        {/* Collection label */}
-        <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-coral mb-3">
-          DROP 001 — POSTED UP
-        </p>
+        {/* Collection / drop label */}
+        {(() => {
+          const productTags = product.tags.map((t) => t.toLowerCase())
+          const matchedDrop = DROPS.find((d) => productTags.includes(d.tag))
+          return matchedDrop ? (
+            <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-coral mb-3">
+              {matchedDrop.fullName}
+            </p>
+          ) : null
+        })()}
 
         {/* Title */}
         <h1 className="font-display font-black text-2xl md:text-3xl uppercase text-asphalt tracking-tight">

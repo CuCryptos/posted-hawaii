@@ -106,6 +106,27 @@ export async function getProducts(): Promise<ShopifyProduct[]> {
   return data.products.edges.map((e) => e.node)
 }
 
+export async function getProductsByTag(tag: string): Promise<ShopifyProduct[]> {
+  const data = await shopifyFetch<{
+    products: { edges: { node: ShopifyProduct }[] }
+  }>({
+    query: `
+      query ProductsByTag($query: String!) {
+        products(first: 50, sortKey: TITLE, query: $query) {
+          edges {
+            node {
+              ...ProductFields
+            }
+          }
+        }
+      }
+      ${PRODUCT_FRAGMENT}
+    `,
+    variables: { query: `tag:"${tag}"` },
+  })
+  return data.products.edges.map((e) => e.node)
+}
+
 export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
   const data = await shopifyFetch<{
     productByHandle: ShopifyProduct | null

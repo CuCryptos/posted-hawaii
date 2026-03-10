@@ -1,48 +1,48 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { Metadata } from 'next'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { JOURNAL_ENTRIES, getJournalEntry, getAdjacentEntries } from '@/lib/journal'
 
-const ENTRIES: Record<string, {
-  category: string
-  title: string
-  date: string
-  heroImage: string
-  paragraphs: string[]
-  prev: { label: string; href: string } | null
-  next: { label: string; href: string } | null
-}> = {
-  'drop-001-posted-up': {
-    category: 'DROP',
-    title: 'Drop 001 — Posted Up',
-    date: 'March 2026',
-    heroImage: '/images/hero/homepage-hero.png',
-    paragraphs: [
-      'The first POSTED drop is here. Six pieces — three tees, two caps, one hoodie — built around the simplest idea: clothes that belong in Honolulu.',
-      'Every piece in Drop 001 is designed to move with you — from morning surf checks to late nights in Kaka\u02BBako. No logos screaming for attention. Just clean graphics, heavyweight cotton, and a local point of view.',
-      'POSTED UP is the everyday collection. The staples your crew reaches for first. Built for life on the island.',
-    ],
-    prev: null,
-    next: { label: 'NEXT', href: '/journal/a-day-in-kakaako' },
-  },
+export function generateStaticParams() {
+  return JOURNAL_ENTRIES.map((entry) => ({ slug: entry.slug }))
 }
 
-export function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
-  // Next.js 16 async params — but we can use a sync approach for static metadata
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const entry = getJournalEntry(slug)
+
+  if (!entry) {
+    return {
+      title: 'Not Found — POSTED HAWAI\u02BBI',
+    }
+  }
+
   return {
-    title: 'Journal — POSTED HAWAI\u02BBI',
-    description: 'Drops, culture, and behind-the-scenes from POSTED.',
+    title: `${entry.title} — POSTED HAWAI\u02BBI`,
+    description: entry.excerpt,
   }
 }
 
-export default async function JournalEntryPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function JournalEntryPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await params
-  const entry = ENTRIES[slug]
+  const entry = getJournalEntry(slug)
 
   if (!entry) {
     notFound()
   }
+
+  const { prev, next } = getAdjacentEntries(slug)
 
   return (
     <>
@@ -51,7 +51,7 @@ export default async function JournalEntryPage({ params }: { params: Promise<{ s
         {/* Hero */}
         <section className="relative min-h-[60vh]">
           <Image
-            src={entry.heroImage}
+            src={entry.image}
             alt={entry.title}
             fill
             className="object-cover"
@@ -70,22 +70,25 @@ export default async function JournalEntryPage({ params }: { params: Promise<{ s
             {entry.title}
           </h1>
           <p className="font-display text-xs uppercase tracking-[0.2em] text-asphalt/40 mt-3">
-            {entry.date}
+            {new Date(entry.date).toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })}
           </p>
-          <div className="font-body text-base md:text-lg text-asphalt/80 leading-relaxed mt-8 space-y-6">
-            {entry.paragraphs.map((p, i) => (
-              <p key={i}>{p}</p>
-            ))}
-          </div>
+          <div
+            className="font-body text-base md:text-lg text-asphalt/80 leading-relaxed mt-8 [&>p]:mb-6 last:[&>p]:mb-0"
+            dangerouslySetInnerHTML={{ __html: entry.content }}
+          />
         </article>
 
         {/* Prev / Next */}
         <nav className="border-t border-asphalt/10 pt-8 mt-16 max-w-2xl mx-auto px-6 pb-20">
           <div className="grid grid-cols-2 gap-8">
             <div>
-              {entry.prev ? (
+              {prev ? (
                 <Link
-                  href={entry.prev.href}
+                  href={`/journal/${prev.slug}`}
                   className="font-display text-sm font-bold uppercase text-asphalt hover:text-coral transition-colors"
                 >
                   &larr; PREVIOUS
@@ -97,9 +100,9 @@ export default async function JournalEntryPage({ params }: { params: Promise<{ s
               )}
             </div>
             <div className="text-right">
-              {entry.next ? (
+              {next ? (
                 <Link
-                  href={entry.next.href}
+                  href={`/journal/${next.slug}`}
                   className="font-display text-sm font-bold uppercase text-asphalt hover:text-coral transition-colors"
                 >
                   NEXT &rarr;

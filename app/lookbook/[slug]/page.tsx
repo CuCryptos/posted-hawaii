@@ -1,29 +1,35 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { LOOKBOOKS, getLookbook } from '@/lib/lookbook'
 
-export const metadata = {
-  title: 'Drop 001 — Posted Up Lookbook — POSTED HAWAI\u02BBI',
-  description: 'Shot in Kaka\u02BBako, Honolulu.',
+type Props = {
+  params: Promise<{ slug: string }>
 }
 
-const LOOKBOOK_IMAGES = [
-  {
-    src: '/images/hero/homepage-hero.png',
-    caption: 'Kaka\u02BBako, Honolulu',
-  },
-  {
-    src: '/images/lifestyle/kakaako-hoodie.png',
-    caption: 'Ala Moana Beach Park',
-  },
-  {
-    src: '/images/products/sandys-tee-black.png',
-    caption: 'Chinatown',
-  },
-]
+export function generateStaticParams() {
+  return LOOKBOOKS.map((entry) => ({ slug: entry.slug }))
+}
 
-export default function LookbookDetailPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const entry = getLookbook(slug)
+  if (!entry) return { title: 'Lookbook \u2014 POSTED HAWAI\u02BBI' }
+
+  return {
+    title: `${entry.title} \u2014 ${entry.subtitle} Lookbook \u2014 POSTED HAWAI\u02BBI`,
+    description: entry.description,
+  }
+}
+
+export default async function LookbookDetailPage({ params }: Props) {
+  const { slug } = await params
+  const entry = getLookbook(slug)
+  if (!entry) notFound()
+
   return (
     <>
       <Navbar />
@@ -33,16 +39,16 @@ export default function LookbookDetailPage() {
         {/* Header */}
         <section className="py-16 text-center">
           <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-asphalt tracking-tight">
-            DROP 001 — POSTED UP
+            {entry.title} &mdash; {entry.subtitle}
           </h1>
           <p className="font-body text-sm text-asphalt/50 mt-2 italic">
-            Shot in Kaka&#x02BB;ako, Honolulu
+            {entry.description}
           </p>
         </section>
 
-        {/* Images */}
+        {/* Images — vertical scroll editorial layout */}
         <div className="space-y-2 md:space-y-4 max-w-7xl mx-auto px-6">
-          {LOOKBOOK_IMAGES.map((img) => (
+          {entry.images.map((img) => (
             <div key={img.src}>
               <div className="relative w-full aspect-[16/9]">
                 <Image

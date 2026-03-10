@@ -2,42 +2,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { JOURNAL_ENTRIES } from '@/lib/journal'
 
 export const metadata = {
   title: 'Journal — POSTED HAWAI\u02BBI',
   description: 'Drops, culture, and behind-the-scenes from POSTED.',
 }
-
-const ENTRIES = [
-  {
-    category: 'DROP',
-    title: 'Drop 001 — Posted Up',
-    date: 'March 2026',
-    image: '/images/hero/homepage-hero.png',
-    href: '/journal/drop-001-posted-up',
-  },
-  {
-    category: 'CULTURE',
-    title: 'A Day in Kaka\u02BBako',
-    date: 'March 2026',
-    image: '/images/lifestyle/kakaako-hoodie.png',
-    href: '/journal/a-day-in-kakaako',
-  },
-  {
-    category: 'BEHIND THE SCENES',
-    title: 'Making the Sandy\u2019s Tee',
-    date: 'March 2026',
-    image: '/images/products/sandys-tee-black.png',
-    href: '/journal/making-the-sandys-tee',
-  },
-  {
-    category: 'STREET',
-    title: 'Where We\u2019re Posted This Week',
-    date: 'March 2026',
-    image: '/images/products/og-cap-black.png',
-    href: '/journal/where-were-posted',
-  },
-]
 
 export default function JournalPage() {
   return (
@@ -55,8 +25,8 @@ export default function JournalPage() {
 
         {/* Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto px-6 pb-20">
-          {ENTRIES.map((entry) => (
-            <Link key={entry.href} href={entry.href} className="group cursor-pointer">
+          {JOURNAL_ENTRIES.map((entry) => (
+            <Link key={entry.slug} href={`/journal/${entry.slug}`} className="group cursor-pointer">
               <div className="aspect-[3/2] bg-warm-sand overflow-hidden relative">
                 <Image
                   src={entry.image}
@@ -73,7 +43,10 @@ export default function JournalPage() {
                 {entry.title}
               </h2>
               <p className="font-display text-xs uppercase tracking-[0.2em] text-asphalt/40 mt-1">
-                {entry.date}
+                {new Date(entry.date).toLocaleDateString('en-US', {
+                  month: 'long',
+                  year: 'numeric',
+                })}
               </p>
             </Link>
           ))}
