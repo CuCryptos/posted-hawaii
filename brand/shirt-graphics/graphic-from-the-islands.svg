@@ -1,0 +1,30 @@
+<svg width="1600" height="1400" viewBox="0 0 1600 1400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1400" fill="none"/>
+
+  <!-- FROM THE ISLANDS — back print, stacked -->
+  <text x="800" y="280" text-anchor="middle"
+        font-family="DIN Condensed, Arial, Helvetica, sans-serif"
+        font-size="80" font-weight="700" letter-spacing="14" fill="#2B6B7F">
+    FROM THE ISLANDS
+  </text>
+
+  <!-- Coral Reef divider -->
+  <line x1="400" y1="340" x2="1200" y2="340" stroke="#C4705A" stroke-width="4"/>
+
+  <!-- POSTED — hero text -->
+  <text x="800" y="620" text-anchor="middle"
+        font-family="Bebas Neue, Arial, Helvetica, sans-serif"
+        font-size="300" font-weight="400" letter-spacing="18" fill="#2C2C2E">
+    POSTED
+  </text>
+
+  <!-- Coral Reef divider -->
+  <line x1="400" y1="700" x2="1200" y2="700" stroke="#C4705A" stroke-width="4"/>
+
+  <!-- HONOLULU HAWAI'I -->
+  <text x="800" y="840" text-anchor="middle"
+        font-family="DIN Condensed, Arial, Helvetica, sans-serif"
+        font-size="70" font-weight="700" letter-spacing="12" fill="#2C2C2E">
+    HONOLULU HAWAI&#x02BB;I
+  </text>
+</svg>

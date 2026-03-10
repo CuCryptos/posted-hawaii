@@ -1,0 +1,33 @@
+<svg width="1600" height="1400" viewBox="0 0 1600 1400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1400" fill="none"/>
+
+  <!-- HONOLULU NIGHTS — Posted Late evening vibe back print -->
+  <text x="800" y="300" text-anchor="middle"
+        font-family="Bebas Neue, Arial, Helvetica, sans-serif"
+        font-size="180" font-weight="400" letter-spacing="10" fill="#2C2C2E">
+    HONOLULU
+  </text>
+
+  <text x="800" y="520" text-anchor="middle"
+        font-family="Bebas Neue, Arial, Helvetica, sans-serif"
+        font-size="220" font-weight="400" letter-spacing="12" fill="#2C2C2E">
+    NIGHTS
+  </text>
+
+  <!-- Coral Reef divider -->
+  <line x1="420" y1="600" x2="1180" y2="600" stroke="#C4705A" stroke-width="5"/>
+
+  <!-- POSTED -->
+  <text x="800" y="780" text-anchor="middle"
+        font-family="Bebas Neue, Arial, Helvetica, sans-serif"
+        font-size="140" font-weight="400" letter-spacing="14" fill="#2C2C2E">
+    POSTED
+  </text>
+
+  <!-- CHINATOWN · KAKA'AKO · DOWNTOWN -->
+  <text x="800" y="920" text-anchor="middle"
+        font-family="DIN Condensed, Arial, Helvetica, sans-serif"
+        font-size="50" font-weight="700" letter-spacing="8" fill="#2B6B7F">
+    CHINATOWN · KAKA&#x02BB;AKO · DOWNTOWN
+  </text>
+</svg>

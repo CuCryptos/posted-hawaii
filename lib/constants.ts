@@ -96,6 +96,7 @@ export const FEATURED_PRODUCTS = [
 export const NAV_LINKS = [
   { label: 'Shop', href: '/shop' },
   { label: 'Drops', href: '/drops' },
-  { label: 'Blog', href: '/blog' },
+  { label: 'Lookbook', href: '/lookbook' },
+  { label: 'Journal', href: '/journal' },
   { label: 'About', href: '/about' },
 ] as const

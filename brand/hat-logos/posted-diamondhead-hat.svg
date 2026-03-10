@@ -1,0 +1,29 @@
+<svg width="1000" height="800" viewBox="0 0 1000 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1000" height="800" fill="none"/>
+
+  <!-- Diamond Head silhouette — compact for hat -->
+  <path d="M200 320
+           L280 320
+           L310 295
+           L370 298
+           L420 260
+           L470 265
+           L520 250
+           L555 254
+           L640 220
+           L700 232
+           L740 224
+           L775 278
+           L800 300
+           L820 320
+           L860 320
+           L860 340
+           L200 340 Z" fill="#4A6741"/>
+
+  <!-- POSTED beneath -->
+  <text x="500" y="540" text-anchor="middle"
+        font-family="Bebas Neue, Arial, Helvetica, sans-serif"
+        font-size="160" font-weight="400" letter-spacing="10" fill="#2C2C2E">
+    POSTED
+  </text>
+</svg>

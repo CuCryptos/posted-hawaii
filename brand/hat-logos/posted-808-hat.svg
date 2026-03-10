@@ -1,0 +1,10 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="none"/>
+
+  <!-- 808 — front center flat embroidery, minimal -->
+  <text x="400" y="410" text-anchor="middle"
+        font-family="Bebas Neue, Arial, Helvetica, sans-serif"
+        font-size="300" font-weight="400" letter-spacing="16" fill="#2C2C2E">
+    808
+  </text>
+</svg>

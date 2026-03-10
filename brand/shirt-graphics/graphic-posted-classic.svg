@@ -1,0 +1,10 @@
+<svg width="1600" height="600" viewBox="0 0 1600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="600" fill="none"/>
+
+  <!-- Clean wordmark — chest or back -->
+  <text x="800" y="380" text-anchor="middle"
+        font-family="Bebas Neue, Arial, Helvetica, sans-serif"
+        font-size="300" font-weight="400" letter-spacing="18" fill="#2C2C2E">
+    POSTED
+  </text>
+</svg>

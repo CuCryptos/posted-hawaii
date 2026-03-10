@@ -1,0 +1,12 @@
+<svg width="1600" height="500" viewBox="0 0 1600 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="500" fill="none"/>
+
+  <!-- Script variant — Posted (sentence case, italic serif) -->
+  <!-- Note: Uses Lora Italic for premium/elevated feel -->
+  <!-- Posted Late collection only -->
+  <text x="800" y="340" text-anchor="middle"
+        font-family="Lora, Georgia, serif"
+        font-size="200" font-weight="400" font-style="italic" letter-spacing="6" fill="#2C2C2E">
+    Posted
+  </text>
+</svg>

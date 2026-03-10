@@ -1,0 +1,51 @@
+<svg width="1600" height="1600" viewBox="0 0 1600 1600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1600" fill="none"/>
+
+  <!-- Outer rings -->
+  <circle cx="800" cy="800" r="500" stroke="#2C2C2E" stroke-width="10"/>
+  <circle cx="800" cy="800" r="455" stroke="#2C2C2E" stroke-width="6"/>
+  <circle cx="800" cy="800" r="260" stroke="#2C2C2E" stroke-width="6"/>
+
+  <!-- Arc paths for curved text -->
+  <path id="topArc" d="M 390 800 A 410 410 0 0 1 1210 800" fill="none"/>
+  <path id="bottomArc" d="M 1210 800 A 410 410 0 0 1 390 800" fill="none"/>
+
+  <!-- Curved text — top -->
+  <text font-family="DM Sans, Arial, Helvetica, sans-serif" font-size="66" font-weight="700" letter-spacing="6" fill="#2C2C2E">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">POSTED HONOLULU HI</textPath>
+  </text>
+
+  <!-- Curved text — bottom -->
+  <text font-family="DM Sans, Arial, Helvetica, sans-serif" font-size="66" font-weight="700" letter-spacing="6" fill="#2C2C2E">
+    <textPath href="#bottomArc" startOffset="50%" text-anchor="middle">POSTMARK</textPath>
+  </text>
+
+  <!-- Side dots — Coral Reef -->
+  <circle cx="430" cy="800" r="10" fill="#C4705A"/>
+  <circle cx="1170" cy="800" r="10" fill="#C4705A"/>
+
+  <!-- Center: POSTED -->
+  <text x="800" y="760" text-anchor="middle"
+        font-family="DM Sans, Arial, Helvetica, sans-serif"
+        font-size="126" font-weight="900" letter-spacing="8" fill="#2C2C2E">
+    POSTED
+  </text>
+
+  <!-- Divider lines — Coral Reef -->
+  <line x1="520" y1="875" x2="710" y2="875" stroke="#C4705A" stroke-width="5"/>
+  <line x1="890" y1="875" x2="1080" y2="875" stroke="#C4705A" stroke-width="5"/>
+
+  <!-- HI -->
+  <text x="800" y="925" text-anchor="middle"
+        font-family="DM Sans, Arial, Helvetica, sans-serif"
+        font-size="86" font-weight="800" letter-spacing="10" fill="#2B6B7F">
+    HI
+  </text>
+
+  <!-- 2026 -->
+  <text x="800" y="1050" text-anchor="middle"
+        font-family="DM Sans, Arial, Helvetica, sans-serif"
+        font-size="70" font-weight="600" letter-spacing="8" fill="#2C2C2E">
+    2026
+  </text>
+</svg>

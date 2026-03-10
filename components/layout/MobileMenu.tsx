@@ -1,17 +1,44 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { NAV_LINKS } from '@/lib/constants'
+
+const PRIMARY_LINKS = [
+  { label: 'Shop', href: '/shop' },
+  { label: 'Drops', href: '/drops' },
+  { label: 'Lookbook', href: '/lookbook' },
+  { label: 'Journal', href: '/journal' },
+  { label: 'About', href: '/about' },
+  { label: 'Size Guide', href: '/size-guide' },
+]
+
+const SECONDARY_LINKS = [
+  { label: 'Instagram', href: 'https://instagram.com/postedhawaii' },
+  { label: 'TikTok', href: 'https://tiktok.com/@postedhawaii' },
+  { label: 'Contact', href: '/contact' },
+]
 
 export function MobileMenu({ scrolled }: { scrolled: boolean }) {
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [open])
+
+  const close = () => setOpen(false)
 
   return (
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`lg:hidden font-display p-2 -m-2 transition-colors ${scrolled ? 'text-asphalt' : 'text-white'}`}
+        className={`lg:hidden p-2 -m-2 transition-colors ${scrolled ? 'text-asphalt' : 'text-white'}`}
         aria-label="Open menu"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -22,31 +49,58 @@ export function MobileMenu({ scrolled }: { scrolled: boolean }) {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-0 h-full w-72 bg-cream p-8 shadow-xl">
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute top-6 right-6 text-asphalt p-2 -m-2"
-              aria-label="Close menu"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-            <nav className="mt-16 flex flex-col gap-6">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className="font-display font-bold text-xl uppercase tracking-wider text-asphalt hover:text-coral transition-colors py-3"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
+        <div className="fixed inset-0 bg-asphalt z-50 flex flex-col">
+          {/* Close button */}
+          <button
+            onClick={close}
+            className="absolute top-6 right-6 text-cream p-2 -m-2"
+            aria-label="Close menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          {/* Primary links */}
+          <nav className="mt-24 px-6 flex flex-col space-y-6">
+            {PRIMARY_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={close}
+                className="font-display font-black text-3xl uppercase text-cream tracking-tight hover:text-coral active:text-coral transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Divider */}
+          <div className="border-t border-cream/10 my-8 w-24 mx-6" />
+
+          {/* Secondary links */}
+          <div className="px-6 flex flex-col space-y-4">
+            {SECONDARY_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={close}
+                className="font-display text-sm uppercase tracking-[0.2em] text-cream/50 hover:text-coral transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Brand footer */}
+          <div className="absolute bottom-8 left-6">
+            <p className="font-display text-xs uppercase tracking-[0.3em] text-cream/30">
+              POSTED HAWAI&#x02BB;I
+            </p>
+            <p className="font-display text-xs uppercase tracking-[0.3em] text-cream/20 mt-1">
+              Honolulu
+            </p>
           </div>
         </div>
       )}

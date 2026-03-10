@@ -13,13 +13,77 @@
   }
 }
 
+/* Hero fade-up animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
+.animate-fade-up {
+  animation: fadeUp 0.7s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-1 {
+  animation: fadeUp 0.7s ease-out 0.15s forwards;
+  opacity: 0;
+}
+
+.animate-fade-up-delay-2 {
+  animation: fadeUp 0.7s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+/* Scroll-triggered reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Cart badge pop */
+@keyframes pop {
+  0% { transform: scale(0); }
+  70% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.animate-pop {
+  animation: pop 0.3s ease-out;
+}
+
+/* Scroll indicator bounce */
+@keyframes gentleBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+
+.animate-bounce-gentle {
+  animation: gentleBounce 2s ease-in-out infinite;
+}
+
+/* Scrollbar hide */
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
 .hide-scrollbar {
   scrollbar-width: none;
+}
+
+/* Mobile menu slide */
+.menu-slide {
+  transform: translateX(100%);
+  transition: transform 300ms ease-out;
+}
+
+.menu-slide.open {
+  transform: translateX(0);
 }
 
 .drawer-panel {
@@ -32,7 +96,19 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .drawer-panel {
+  .animate-fade-up,
+  .animate-fade-up-delay-1,
+  .animate-fade-up-delay-2 {
+    animation: none;
+    opacity: 1;
+  }
+  .reveal {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+  .drawer-panel,
+  .menu-slide {
     transition: none;
   }
 }
