@@ -32,7 +32,7 @@ export default async function LookbookDetailPage({ params }: Props) {
 
   return (
     <>
-      <Navbar />
+      <Navbar variant="dark" />
       <main className="bg-cream min-h-screen">
         <div className="h-20" />
 

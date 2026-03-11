@@ -20,7 +20,7 @@ function formatDropDate(dateStr: string): string {
 export default function DropsPage() {
   return (
     <>
-      <Navbar />
+      <Navbar variant="dark" />
       <main className="bg-cream min-h-screen">
         <div className="h-20" />
 

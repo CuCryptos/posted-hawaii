@@ -7,7 +7,7 @@ export function RelatedProducts({ products }: { products: ShopifyProduct[] }) {
   if (items.length === 0) return null
 
   return (
-    <section className="bg-white py-16 md:py-20">
+    <section className="bg-cream py-16 md:py-20">
       <div className="max-w-7xl mx-auto px-6">
         <h2 className="font-display text-xs font-bold uppercase tracking-[0.3em] text-asphalt/40 mb-10 text-center">
           You May Also Like
@@ -34,27 +34,39 @@ export function RelatedProducts({ products }: { products: ShopifyProduct[] }) {
 }
 
 function RelatedCard({ product }: { product: ShopifyProduct }) {
-  const image = product.images.edges[0]?.node
+  const primaryImage = product.images.edges[0]?.node
+  const hoverImage = product.images.edges[1]?.node
   const price = product.priceRange.minVariantPrice.amount
 
   return (
     <Link href={`/shop/${product.handle}`} className="group block">
-      <div className="relative aspect-[3/4] bg-warm-sand overflow-hidden">
-        {image && (
+      <div className="relative aspect-square bg-[#F0F0F0] overflow-hidden">
+        {primaryImage && (
           <Image
-            src={image.url}
-            alt={image.altText || product.title}
+            src={primaryImage.url}
+            alt={primaryImage.altText || product.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className={`object-contain p-4 transition-opacity duration-300 ${
+              hoverImage ? 'group-hover:opacity-0' : ''
+            }`}
+            sizes="(max-width: 768px) 70vw, 25vw"
+          />
+        )}
+        {hoverImage && (
+          <Image
+            src={hoverImage.url}
+            alt={hoverImage.altText || `${product.title} alternate view`}
+            fill
+            className="object-contain p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
             sizes="(max-width: 768px) 70vw, 25vw"
           />
         )}
       </div>
-      <h3 className="font-display text-sm font-bold uppercase mt-3 text-asphalt">
+      <h3 className="font-display text-[13px] font-bold mt-3 text-asphalt">
         {product.title}
       </h3>
-      <p className="font-body text-sm text-asphalt/60 mt-1">
-        ${parseFloat(price).toFixed(0)}
+      <p className="font-display text-[13px] text-asphalt/60 mt-1">
+        ${parseFloat(price).toFixed(2)}
       </p>
     </Link>
   )

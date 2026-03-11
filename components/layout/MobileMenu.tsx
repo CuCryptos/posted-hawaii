@@ -18,7 +18,7 @@ const SECONDARY_LINKS = [
   { label: 'Contact', href: '/contact' },
 ]
 
-export function MobileMenu({ scrolled }: { scrolled: boolean }) {
+export function MobileMenu({ darkText }: { darkText: boolean }) {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export function MobileMenu({ scrolled }: { scrolled: boolean }) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className={`lg:hidden p-2 -m-2 transition-colors ${scrolled ? 'text-asphalt' : 'text-white'}`}
+        className={`lg:hidden p-2 -m-2 transition-colors ${darkText ? 'text-asphalt' : 'text-white'}`}
         aria-label="Open menu"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

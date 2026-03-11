@@ -60,7 +60,7 @@ function SizeTable({ rows }: { rows: { size: string; chest: string; length: stri
 export default function SizeGuidePage() {
   return (
     <>
-      <Navbar />
+      <Navbar variant="dark" />
       <main className="bg-cream min-h-screen">
         <div className="h-20" />
 

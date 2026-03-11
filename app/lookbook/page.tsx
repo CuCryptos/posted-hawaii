@@ -12,7 +12,7 @@ export const metadata = {
 export default function LookbookPage() {
   return (
     <>
-      <Navbar />
+      <Navbar variant="dark" />
       <main className="bg-cream min-h-screen">
         <div className="h-20" />
 

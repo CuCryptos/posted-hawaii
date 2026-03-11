@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import type { ShopifyProduct, ShopifyProductVariant } from '@/lib/shopify-types'
 import { useCart } from '@/components/cart/CartProvider'
 import { DROPS } from '@/lib/drops'
@@ -20,7 +21,7 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
   const variants = product.variants.edges.map((e) => e.node)
   const images = product.images.edges.map((e) => e.node)
 
-  // Extract unique options (e.g., Size, Color)
+  // Extract unique options
   const options = useMemo(() => {
     const map = new Map<string, string[]>()
     for (const v of variants) {
@@ -33,7 +34,6 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
     return Array.from(map.entries()).map(([name, values]) => ({ name, values }))
   }, [variants])
 
-  // Track selected option values
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(() => {
     const defaults: Record<string, string> = {}
     for (const opt of options) {
@@ -47,17 +47,15 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
   })
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const [openAccordion, setOpenAccordion] = useState<string>('details')
+  const [activeTab, setActiveTab] = useState<'description' | 'fit' | 'shipping'>('description')
   const [addedToCart, setAddedToCart] = useState(false)
 
-  // Find the matching variant
   const selectedVariant: ShopifyProductVariant | undefined = useMemo(() => {
     return variants.find((v) =>
       v.selectedOptions.every((opt) => selectedOptions[opt.name] === opt.value)
     )
   }, [variants, selectedOptions])
 
-  // Check if a specific size is available for the current color selection
   const isSizeAvailable = (size: string): boolean => {
     const optionsWithSize: Record<string, string> = { ...selectedOptions, Size: size }
     const variant = variants.find((v) =>
@@ -67,7 +65,7 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
   }
 
   const price = selectedVariant?.price.amount ?? product.priceRange.minVariantPrice.amount
-  const formattedPrice = `$${parseFloat(price).toFixed(0)}`
+  const formattedPrice = `$${parseFloat(price).toFixed(2)}`
   const isSoldOut = selectedVariant && !selectedVariant.availableForSale
 
   async function handleAddToCart() {
@@ -80,38 +78,23 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
   const colorOption = options.find((o) => o.name === 'Color')
   const sizeOption = options.find((o) => o.name === 'Size')
 
-  const accordions = [
-    {
-      key: 'details',
-      title: 'Details',
-      content: product.description || 'Premium heavyweight cotton with a relaxed fit. Screen-printed graphics designed in Honolulu. Pre-shrunk and garment-dyed for a worn-in feel from day one.',
-    },
-    {
-      key: 'fit',
-      title: 'Fit & Sizing',
-      content: 'Relaxed, slightly oversized fit. We recommend your usual size for the intended look, or size down for a more fitted silhouette. Model is 5\'11" wearing size M.',
-    },
-    {
-      key: 'care',
-      title: 'Care',
-      content: 'Machine wash cold, inside out. Tumble dry low or hang dry. Do not bleach. Iron inside out if needed. Printed graphics are durable but gentle care extends the life of the garment.',
-    },
-  ]
+  // Drop label
+  const productTags = product.tags.map((t) => t.toLowerCase())
+  const matchedDrop = DROPS.find((d) => productTags.includes(d.tag))
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
       {/* Left — Gallery */}
       <div>
         {/* Desktop: thumbnails + main image */}
-        <div className="hidden lg:flex gap-4">
-          {/* Thumbnail strip */}
+        <div className="hidden lg:flex gap-3">
           {images.length > 1 && (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2 w-[72px] flex-shrink-0">
               {images.map((img, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedImageIndex(i)}
-                  className={`relative w-16 aspect-square bg-warm-sand overflow-hidden cursor-pointer border-2 transition-colors ${
+                  className={`relative aspect-square bg-[#F0F0F0] overflow-hidden cursor-pointer border transition-colors ${
                     selectedImageIndex === i ? 'border-asphalt' : 'border-transparent'
                   }`}
                 >
@@ -119,21 +102,21 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
                     src={img.url}
                     alt={img.altText || `${product.title} view ${i + 1}`}
                     fill
-                    className="object-cover"
-                    sizes="64px"
+                    className="object-contain p-1"
+                    sizes="72px"
                   />
                 </button>
               ))}
             </div>
           )}
           {/* Main image */}
-          <div className="relative flex-1 aspect-[3/4] bg-warm-sand overflow-hidden">
+          <div className="relative flex-1 aspect-[3/4] bg-[#F0F0F0] overflow-hidden">
             {images[selectedImageIndex] && (
               <Image
                 src={images[selectedImageIndex].url}
                 alt={images[selectedImageIndex].altText || product.title}
                 fill
-                className="object-cover"
+                className="object-contain p-6"
                 sizes="50vw"
                 priority
               />
@@ -147,27 +130,26 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
             {images.map((img, i) => (
               <div
                 key={i}
-                className="relative w-full flex-shrink-0 aspect-[3/4] bg-warm-sand overflow-hidden snap-center"
+                className="relative w-full flex-shrink-0 aspect-square bg-[#F0F0F0] overflow-hidden snap-center"
               >
                 <Image
                   src={img.url}
                   alt={img.altText || `${product.title} view ${i + 1}`}
                   fill
-                  className="object-cover"
+                  className="object-contain p-6"
                   sizes="100vw"
                   priority={i === 0}
                 />
               </div>
             ))}
           </div>
-          {/* Dot indicators */}
           {images.length > 1 && (
             <div className="flex justify-center gap-2 mt-4">
               {images.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedImageIndex(i)}
-                  className={`w-2 h-2 rounded-full transition-colors ${
+                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
                     selectedImageIndex === i ? 'bg-asphalt' : 'bg-asphalt/20'
                   }`}
                   aria-label={`View image ${i + 1}`}
@@ -179,31 +161,22 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
       </div>
 
       {/* Right — Product Info */}
-      <div className="lg:sticky lg:top-24 lg:self-start">
-        {/* Collection / drop label */}
-        {(() => {
-          const productTags = product.tags.map((t) => t.toLowerCase())
-          const matchedDrop = DROPS.find((d) => productTags.includes(d.tag))
-          return matchedDrop ? (
-            <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-coral mb-3">
-              {matchedDrop.fullName}
-            </p>
-          ) : null
-        })()}
+      <div className="lg:sticky lg:top-28 lg:self-start">
+        {/* Collection label */}
+        {matchedDrop && (
+          <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-asphalt/50 mb-2">
+            {matchedDrop.collection.replace('_', ' ')}
+          </p>
+        )}
 
         {/* Title */}
-        <h1 className="font-display font-black text-2xl md:text-3xl uppercase text-asphalt tracking-tight">
+        <h1 className="font-display font-black text-xl md:text-2xl text-asphalt tracking-tight">
           {product.title}
         </h1>
 
         {/* Price */}
-        <p className="font-display text-xl text-asphalt mt-2">
+        <p className="font-display text-base text-asphalt mt-2">
           {formattedPrice}
-        </p>
-
-        {/* Statement */}
-        <p className="font-body text-base text-asphalt/70 mt-4 leading-relaxed max-w-sm">
-          {product.description}
         </p>
 
         {/* Divider */}
@@ -212,20 +185,20 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
         {/* Color selector */}
         {colorOption && (
           <div className="mb-6">
-            <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-asphalt mb-3">
-              Color — {selectedOptions.Color}
+            <p className="font-display text-xs font-medium uppercase tracking-[0.15em] text-asphalt/70 mb-3">
+              Color: <span className="text-asphalt">{selectedOptions.Color}</span>
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-2.5">
               {colorOption.values.map((color) => (
                 <button
                   key={color}
                   onClick={() =>
                     setSelectedOptions((prev) => ({ ...prev, Color: color }))
                   }
-                  className={`w-8 h-8 rounded-full cursor-pointer border-2 transition-all ${
+                  className={`w-7 h-7 rounded-full cursor-pointer border-2 transition-all ${
                     selectedOptions.Color === color
-                      ? 'border-asphalt ring-2 ring-offset-2 ring-asphalt'
-                      : 'border-transparent'
+                      ? 'border-asphalt ring-1 ring-offset-2 ring-asphalt'
+                      : 'border-asphalt/15 hover:border-asphalt/40'
                   }`}
                   style={{ backgroundColor: COLOR_MAP[color] || '#CCCCCC' }}
                   aria-label={color}
@@ -239,9 +212,17 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
         {/* Size selector */}
         {sizeOption && (
           <div className="mb-6">
-            <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-asphalt mb-3">
-              Size
-            </p>
+            <div className="flex justify-between items-center mb-3">
+              <p className="font-display text-xs font-medium uppercase tracking-[0.15em] text-asphalt/70">
+                Size
+              </p>
+              <Link
+                href="/size-guide"
+                className="font-display text-xs font-medium uppercase tracking-[0.1em] text-asphalt/50 hover:text-asphalt transition-colors"
+              >
+                View Size Guide
+              </Link>
+            </div>
             <div className="flex gap-2">
               {sizeOption.values.map((size) => {
                 const available = isSizeAvailable(size)
@@ -255,12 +236,12 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
                       }
                     }}
                     disabled={!available}
-                    className={`w-12 h-12 flex items-center justify-center font-display text-sm font-bold uppercase border-2 transition-colors ${
+                    className={`min-w-[48px] h-11 px-3 flex items-center justify-center font-display text-sm font-medium border transition-colors ${
                       !available
-                        ? 'text-asphalt/20 border-asphalt/10 cursor-not-allowed line-through'
+                        ? 'text-asphalt/20 border-asphalt/5 cursor-not-allowed line-through'
                         : isSelected
                           ? 'bg-asphalt text-cream border-asphalt'
-                          : 'bg-transparent text-asphalt border-asphalt/20 hover:border-asphalt'
+                          : 'bg-transparent text-asphalt border-asphalt/15 hover:border-asphalt'
                     }`}
                   >
                     {size}
@@ -275,12 +256,12 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
         <button
           onClick={handleAddToCart}
           disabled={loading || !!isSoldOut}
-          className={`w-full py-4 font-display font-bold text-sm uppercase tracking-widest transition-colors duration-300 ${
+          className={`w-full py-4 font-display font-bold text-sm uppercase tracking-widest transition-colors duration-200 ${
             isSoldOut
-              ? 'bg-asphalt/30 text-asphalt/50 cursor-not-allowed'
+              ? 'bg-asphalt/20 text-asphalt/40 cursor-not-allowed'
               : addedToCart
                 ? 'bg-palm text-cream'
-                : 'bg-asphalt text-cream hover:bg-coral'
+                : 'bg-asphalt text-cream hover:bg-asphalt/90'
           }`}
         >
           {isSoldOut
@@ -289,41 +270,48 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
               ? 'ADDED \u2713'
               : loading
                 ? 'ADDING...'
-                : `ADD TO CART \u2014 ${formattedPrice}`}
+                : 'ADD TO CART'}
         </button>
 
-        {/* Accordions */}
-        <div className="mt-8 border-t border-asphalt/10">
-          {accordions.map((acc) => (
-            <div key={acc.key} className="border-b border-asphalt/10">
+        {/* Tabs — Description / Fit / Shipping */}
+        <div className="mt-8">
+          <div className="flex border-b border-asphalt/10">
+            {([
+              { key: 'description', label: 'Description' },
+              { key: 'fit', label: 'Size & Fit' },
+              { key: 'shipping', label: 'Shipping & Returns' },
+            ] as const).map((tab) => (
               <button
-                onClick={() =>
-                  setOpenAccordion(openAccordion === acc.key ? '' : acc.key)
-                }
-                className="w-full flex justify-between items-center py-4"
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`font-display text-xs font-bold uppercase tracking-[0.1em] py-3 mr-6 border-b-2 transition-colors ${
+                  activeTab === tab.key
+                    ? 'text-asphalt border-asphalt'
+                    : 'text-asphalt/40 border-transparent hover:text-asphalt/70'
+                }`}
               >
-                <span className="font-display text-sm font-bold uppercase tracking-[0.15em] text-asphalt">
-                  {acc.title}
-                </span>
-                <svg
-                  className={`w-4 h-4 text-asphalt transition-transform duration-200 ${
-                    openAccordion === acc.key ? 'rotate-180' : ''
-                  }`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
+                {tab.label}
               </button>
-              {openAccordion === acc.key && (
-                <div className="font-body text-sm text-asphalt/70 leading-relaxed pb-6 pt-2">
-                  {acc.content}
-                </div>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="py-5">
+            {activeTab === 'description' && (
+              <p className="font-body text-sm text-asphalt/70 leading-relaxed">
+                {product.description || 'Premium heavyweight cotton with a relaxed fit. Screen-printed graphics designed in Honolulu. Pre-shrunk and garment-dyed for a worn-in feel from day one.'}
+              </p>
+            )}
+            {activeTab === 'fit' && (
+              <p className="font-body text-sm text-asphalt/70 leading-relaxed">
+                Relaxed, slightly oversized fit. We recommend your usual size for the intended look, or size down for a more fitted silhouette.
+              </p>
+            )}
+            {activeTab === 'shipping' && (
+              <div className="font-body text-sm text-asphalt/70 leading-relaxed space-y-2">
+                <p>Free shipping on orders over $100. Standard shipping 5-7 business days.</p>
+                <p>Returns accepted within 30 days of delivery. Items must be unworn with original tags.</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

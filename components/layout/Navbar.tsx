@@ -13,11 +13,14 @@ const NAV_LINKS = [
   { label: 'About', href: '/about' },
 ]
 
-export function Navbar() {
+export function Navbar({ variant = 'light' }: { variant?: 'light' | 'dark' }) {
   const [scrolled, setScrolled] = useState(false)
   const { cart } = useCart()
 
   const itemCount = cart?.totalQuantity ?? 0
+
+  // 'light' = white text (for dark backgrounds), 'dark' = asphalt text (for light backgrounds)
+  const useDarkText = variant === 'dark' || scrolled
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50)
@@ -37,7 +40,7 @@ export function Navbar() {
         <Link
           href="/"
           className={`font-display font-black text-2xl tracking-tight transition-colors ${
-            scrolled ? 'text-asphalt' : 'text-white'
+            useDarkText ? 'text-asphalt' : 'text-white'
           }`}
         >
           POSTED
@@ -50,7 +53,7 @@ export function Navbar() {
               key={link.href}
               href={link.href}
               className={`font-display text-sm font-bold uppercase tracking-[0.15em] transition-colors ${
-                scrolled ? 'text-asphalt hover:text-coral' : 'text-white hover:text-white/70'
+                useDarkText ? 'text-asphalt hover:text-coral' : 'text-white hover:text-white/70'
               }`}
             >
               {link.label}
@@ -64,7 +67,7 @@ export function Navbar() {
             href="/cart"
             aria-label="Cart"
             className={`p-2 -m-2 relative transition-colors ${
-              scrolled ? 'text-asphalt' : 'text-white'
+              useDarkText ? 'text-asphalt' : 'text-white'
             }`}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -79,7 +82,7 @@ export function Navbar() {
             )}
           </Link>
 
-          <MobileMenu scrolled={scrolled} />
+          <MobileMenu darkText={useDarkText} />
         </div>
       </div>
     </header>

@@ -40,7 +40,7 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <>
-      <Navbar />
+      <Navbar variant="dark" />
       <main className="bg-cream min-h-screen">
         <div className="h-20" />
         <div className="max-w-7xl mx-auto px-6 py-10 lg:py-12">
