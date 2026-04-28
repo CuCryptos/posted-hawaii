@@ -20,8 +20,8 @@ type LookbookDrawerProps = {
 }
 
 export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
-  const { addToCart, loading } = useCart()
-  const [added, setAdded] = useState(false)
+  const { addToCart, loading, pendingTarget, error, clearError } = useCart()
+  const [addedItemHref, setAddedItemHref] = useState<string | null>(null)
 
   // Lock body scroll when open
   useEffect(() => {
@@ -33,17 +33,17 @@ export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
     return () => { document.body.style.overflow = '' }
   }, [open])
 
-  // Reset "added" state when item changes
-  useEffect(() => {
-    setAdded(false)
-  }, [item])
-
   if (!item) return null
+
+  const added = addedItemHref === item.href
 
   async function handleAdd() {
     if (!item?.variantId) return
-    await addToCart(item.variantId)
-    setAdded(true)
+    clearError()
+    const didAdd = await addToCart(item.variantId)
+    if (didAdd) {
+      setAddedItemHref(item.href)
+    }
   }
 
   return (
@@ -99,7 +99,7 @@ export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
               disabled={loading}
               className="w-full mt-6 bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-5 hover:bg-coral/90 transition-colors disabled:opacity-50"
             >
-              {added ? 'Added!' : loading ? 'Adding...' : 'Add to Bag'}
+              {added ? 'Added!' : loading && pendingTarget === item.variantId ? 'Adding...' : 'Add to Bag'}
             </button>
           ) : (
             <Link
@@ -108,6 +108,11 @@ export function LookbookDrawer({ open, onClose, item }: LookbookDrawerProps) {
             >
               View Options
             </Link>
+          )}
+          {error && (
+            <p className="mt-3 font-body text-[14px] text-lava">
+              {error}
+            </p>
           )}
 
           <Link

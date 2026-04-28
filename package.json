@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint app components lib next.config.ts tailwind.config.ts postcss.config.mjs eslint.config.mjs --max-warnings=0",
+    "typecheck": "tsc --noEmit -p tsconfig.typecheck.json",
+    "check": "npm run lint && npm run typecheck && npm run build",
+    "shopify:admin:check": "tsx scripts/check-shopify-admin.ts",
+    "shopify:launch:upsert": "tsx scripts/upsert-shopify-launch.ts"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

@@ -4,14 +4,20 @@ import type { Metadata } from 'next'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { ProductCard } from '@/components/shop/ProductCard'
+import {
+  getLaunchBySlug,
+  getLaunches,
+  getLaunchMerchandisingHref,
+  getLaunchMerchandisingLabel,
+} from '@/lib/launches'
 import { getProductsByTag } from '@/lib/shopify'
-import { DROPS, getDropBySlug } from '@/lib/drops'
 
 export const revalidate = 60
 
-export function generateStaticParams() {
-  return DROPS.map((drop) => ({
-    slug: drop.slug,
+export async function generateStaticParams() {
+  const launches = await getLaunches()
+  return launches.map((launch) => ({
+    slug: launch.slug,
   }))
 }
 
@@ -21,15 +27,15 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const drop = getDropBySlug(slug)
+  const launch = await getLaunchBySlug(slug)
 
-  if (!drop) {
-    return { title: 'Drop Not Found — POSTED HAWAI\u02BBI' }
+  if (!launch) {
+    return { title: 'Drop Not Found — POSTED HAWAIʻI' }
   }
 
   return {
-    title: `${drop.fullName} — POSTED HAWAI\u02BBI`,
-    description: drop.description,
+    title: `${launch.fullName} — POSTED HAWAIʻI`,
+    description: launch.description,
   }
 }
 
@@ -43,45 +49,42 @@ export default async function DropPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const drop = getDropBySlug(slug)
+  const launch = await getLaunchBySlug(slug)
 
-  if (!drop) {
+  if (!launch) {
     notFound()
   }
 
-  const products = await getProductsByTag(drop.tag)
+  const products = await getProductsByTag(launch.tag)
 
   return (
     <>
       <Navbar />
       <main className="min-h-screen">
-        {/* Hero */}
         <section className="relative min-h-[60vh] bg-asphalt flex items-end">
           <div className="absolute inset-0 flex items-center justify-center">
             <p className="font-display font-black text-[8rem] md:text-[14rem] uppercase text-white/5 tracking-tight select-none">
-              {formatDropNumber(drop.number)}
+              {formatDropNumber(launch.number)}
             </p>
           </div>
           <div className="relative p-8 md:p-16">
             <p className="font-display text-sm font-bold uppercase tracking-[0.3em] text-coral">
-              DROP {formatDropNumber(drop.number)}
+              DROP {formatDropNumber(launch.number)}
             </p>
             <h1 className="font-display font-black text-5xl md:text-7xl uppercase text-white tracking-tight mt-2">
-              {drop.name}
+              {launch.name}
             </h1>
           </div>
         </section>
 
-        {/* Description */}
         <section className="bg-cream py-16 md:py-20">
           <div className="max-w-2xl mx-auto text-center px-6">
             <p className="font-body text-lg md:text-xl text-asphalt/70 leading-relaxed">
-              {drop.description}
+              {launch.description}
             </p>
           </div>
         </section>
 
-        {/* Product grid */}
         <section className="bg-cream py-16">
           <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-asphalt/40 mb-10 text-center">
             SHOP THE DROP
@@ -99,13 +102,12 @@ export default async function DropPage({
           )}
         </section>
 
-        {/* Bottom CTA */}
         <section className="bg-cream py-16 text-center">
           <Link
-            href="/shop"
+            href={getLaunchMerchandisingHref(launch)}
             className="inline-block border-2 border-asphalt text-asphalt px-10 py-4 font-display font-bold text-sm uppercase tracking-widest hover:bg-asphalt hover:text-cream transition-colors"
           >
-            SHOP ALL PRODUCTS
+            {getLaunchMerchandisingLabel(launch).toUpperCase()}
           </Link>
         </section>
       </main>

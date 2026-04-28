@@ -4,31 +4,43 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
-import { LOOKBOOKS, getLookbook } from '@/lib/lookbook'
+import { ProductCard } from '@/components/shop/ProductCard'
+import {
+  getLaunchBySlug,
+  getLaunches,
+  getLaunchMerchandisingHref,
+  getLaunchMerchandisingLabel,
+} from '@/lib/launches'
+import { getProductsByHandles } from '@/lib/shopify'
 
 type Props = {
   params: Promise<{ slug: string }>
 }
 
-export function generateStaticParams() {
-  return LOOKBOOKS.map((entry) => ({ slug: entry.slug }))
+export async function generateStaticParams() {
+  const launches = await getLaunches()
+  return launches.map((launch) => ({ slug: launch.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const entry = getLookbook(slug)
-  if (!entry) return { title: 'Lookbook \u2014 POSTED HAWAI\u02BBI' }
+  const launch = await getLaunchBySlug(slug)
+  if (!launch) return { title: 'Lookbook — POSTED HAWAIʻI' }
 
   return {
-    title: `${entry.title} \u2014 ${entry.subtitle} Lookbook \u2014 POSTED HAWAI\u02BBI`,
-    description: entry.description,
+    title: `${launch.lookbook.title} — ${launch.lookbook.subtitle} Lookbook — POSTED HAWAIʻI`,
+    description: launch.lookbook.description,
   }
 }
 
 export default async function LookbookDetailPage({ params }: Props) {
   const { slug } = await params
-  const entry = getLookbook(slug)
-  if (!entry) notFound()
+  const launch = await getLaunchBySlug(slug)
+  if (!launch) notFound()
+
+  const featuredProducts = launch.merchandising?.featuredProductHandles?.length
+    ? await getProductsByHandles(launch.merchandising.featuredProductHandles)
+    : []
 
   return (
     <>
@@ -36,19 +48,17 @@ export default async function LookbookDetailPage({ params }: Props) {
       <main className="bg-cream min-h-screen">
         <div className="h-20" />
 
-        {/* Header */}
         <section className="py-16 text-center">
           <h1 className="font-display font-black text-3xl md:text-4xl uppercase text-asphalt tracking-tight">
-            {entry.title} &mdash; {entry.subtitle}
+            {launch.lookbook.title} &mdash; {launch.lookbook.subtitle}
           </h1>
           <p className="font-body text-sm text-asphalt/50 mt-2 italic">
-            {entry.description}
+            {launch.lookbook.description}
           </p>
         </section>
 
-        {/* Images — vertical scroll editorial layout */}
         <div className="space-y-2 md:space-y-4 max-w-7xl mx-auto px-6">
-          {entry.images.map((img) => (
+          {launch.lookbook.images.map((img) => (
             <div key={img.src}>
               <div className="relative w-full aspect-[16/9]">
                 <Image
@@ -66,13 +76,27 @@ export default async function LookbookDetailPage({ params }: Props) {
           ))}
         </div>
 
-        {/* CTA */}
+        {featuredProducts.length > 0 && (
+          <section className="py-16 md:py-20">
+            <div className="max-w-7xl mx-auto px-6">
+              <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-asphalt/40 mb-10 text-center">
+                FEATURED PIECES
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                {featuredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         <section className="py-16 text-center">
           <Link
-            href="/shop"
+            href={getLaunchMerchandisingHref(launch)}
             className="inline-block border-2 border-asphalt text-asphalt px-10 py-4 font-display font-bold text-sm uppercase tracking-widest hover:bg-asphalt hover:text-cream transition-colors"
           >
-            SHOP THE DROP
+            {getLaunchMerchandisingLabel(launch).toUpperCase()}
           </Link>
         </section>
       </main>

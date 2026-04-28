@@ -21,13 +21,12 @@ function getTimeLeft(target: Date) {
 }
 
 export function DropCountdown({ releaseDate, isLive }: DropCountdownProps) {
-  const [timeLeft, setTimeLeft] = useState<ReturnType<typeof getTimeLeft>>(null)
-  const [mounted, setMounted] = useState(false)
+  const [timeLeft, setTimeLeft] = useState<ReturnType<typeof getTimeLeft>>(() =>
+    getTimeLeft(new Date(releaseDate))
+  )
 
   useEffect(() => {
-    setMounted(true)
     const target = new Date(releaseDate)
-    setTimeLeft(getTimeLeft(target))
 
     const interval = setInterval(() => {
       const tl = getTimeLeft(target)
@@ -42,14 +41,6 @@ export function DropCountdown({ releaseDate, isLive }: DropCountdownProps) {
     return (
       <p className="font-display font-bold text-[11px] uppercase tracking-widest text-palm">
         Live Now
-      </p>
-    )
-  }
-
-  if (!mounted) {
-    return (
-      <p className="font-display text-[11px] uppercase tracking-widest text-asphalt/40">
-        Loading...
       </p>
     )
   }
