@@ -34,10 +34,169 @@ async function shopifyFetch<T>({
   return json.data
 }
 
+const PRODUCTS_PAGE_SIZE = 50
+
+type ShopifyProductConnection = {
+  edges: { node: ShopifyProduct }[]
+  pageInfo: {
+    hasNextPage: boolean
+    endCursor: string | null
+  }
+}
+
+type ShopifyProductHandleConnection = {
+  edges: { node: { handle: string } }[]
+  pageInfo: {
+    hasNextPage: boolean
+    endCursor: string | null
+  }
+}
+
+function escapeSearchValue(value: string) {
+  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+}
+
+async function getProductsPage({
+  after,
+  query,
+  first = PRODUCTS_PAGE_SIZE,
+  fragment,
+}: {
+  after?: string | null
+  query?: string
+  first?: number
+  fragment: string
+}) {
+  const data = await shopifyFetch<{
+    products: ShopifyProductConnection
+  }>({
+    query: `
+      query ProductsPage($after: String, $first: Int!, $query: String) {
+        products(first: $first, sortKey: TITLE, after: $after, query: $query) {
+          edges {
+            node {
+              ...ProductCardFields
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+      ${fragment}
+    `,
+    variables: {
+      after: after ?? null,
+      first,
+      query,
+    },
+  })
+
+  return data.products
+}
+
+async function getAllProducts(query?: string): Promise<ShopifyProduct[]> {
+  const products: ShopifyProduct[] = []
+  let after: string | null = null
+  let hasNextPage = true
+
+  while (hasNextPage) {
+    const page = await getProductsPage({
+      after,
+      query,
+      fragment: PRODUCT_CARD_FRAGMENT,
+    })
+    products.push(...page.edges.map((edge) => edge.node))
+    hasNextPage = page.pageInfo.hasNextPage
+    after = page.pageInfo.endCursor
+  }
+
+  return products
+}
+
+async function getProductHandlesPage(after?: string | null) {
+  const data = await shopifyFetch<{
+    products: ShopifyProductHandleConnection
+  }>({
+    query: `
+      query ProductHandles($after: String, $first: Int!) {
+        products(first: $first, sortKey: TITLE, after: $after) {
+          edges {
+            node {
+              handle
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+    `,
+    variables: {
+      after: after ?? null,
+      first: PRODUCTS_PAGE_SIZE,
+    },
+  })
+
+  return data.products
+}
+
 // ---------- Product Queries ----------
 
-const PRODUCT_FRAGMENT = `
-  fragment ProductFields on Product {
+const PRODUCT_CARD_FRAGMENT = `
+  fragment ProductCardFields on Product {
+    id
+    handle
+    title
+    description
+    productType
+    tags
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 2) {
+      edges {
+        node {
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+    variants(first: 10) {
+      edges {
+        node {
+          id
+          title
+          availableForSale
+          price {
+            amount
+            currencyCode
+          }
+          selectedOptions {
+            name
+            value
+          }
+          image {
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+`
+
+const PRODUCT_DETAIL_FRAGMENT = `
+  fragment ProductDetailFields on Product {
     id
     handle
     title
@@ -87,44 +246,27 @@ const PRODUCT_FRAGMENT = `
 `
 
 export async function getProducts(): Promise<ShopifyProduct[]> {
-  const data = await shopifyFetch<{
-    products: { edges: { node: ShopifyProduct }[] }
-  }>({
-    query: `
-      query Products {
-        products(first: 50, sortKey: TITLE) {
-          edges {
-            node {
-              ...ProductFields
-            }
-          }
-        }
-      }
-      ${PRODUCT_FRAGMENT}
-    `,
-  })
-  return data.products.edges.map((e) => e.node)
+  return getAllProducts()
 }
 
 export async function getProductsByTag(tag: string): Promise<ShopifyProduct[]> {
-  const data = await shopifyFetch<{
-    products: { edges: { node: ShopifyProduct }[] }
-  }>({
-    query: `
-      query ProductsByTag($query: String!) {
-        products(first: 50, sortKey: TITLE, query: $query) {
-          edges {
-            node {
-              ...ProductFields
-            }
-          }
-        }
-      }
-      ${PRODUCT_FRAGMENT}
-    `,
-    variables: { query: `tag:"${tag}"` },
-  })
-  return data.products.edges.map((e) => e.node)
+  return getAllProducts(`tag:"${escapeSearchValue(tag)}"`)
+}
+
+export async function getProductHandles(): Promise<string[]> {
+  const handles: string[] = []
+  let after: string | null = null
+  let hasNextPage = true
+
+  while (hasNextPage) {
+    const page = await getProductHandlesPage(after)
+
+    handles.push(...page.edges.map((edge) => edge.node.handle))
+    hasNextPage = page.pageInfo.hasNextPage
+    after = page.pageInfo.endCursor
+  }
+
+  return handles
 }
 
 export async function getProductByHandle(handle: string): Promise<ShopifyProduct | null> {
@@ -134,14 +276,64 @@ export async function getProductByHandle(handle: string): Promise<ShopifyProduct
     query: `
       query ProductByHandle($handle: String!) {
         productByHandle(handle: $handle) {
-          ...ProductFields
+          ...ProductDetailFields
         }
       }
-      ${PRODUCT_FRAGMENT}
+      ${PRODUCT_DETAIL_FRAGMENT}
     `,
     variables: { handle },
   })
   return data.productByHandle
+}
+
+async function getProductCardByHandle(handle: string): Promise<ShopifyProduct | null> {
+  const data = await shopifyFetch<{
+    productByHandle: ShopifyProduct | null
+  }>({
+    query: `
+      query ProductCardByHandle($handle: String!) {
+        productByHandle(handle: $handle) {
+          ...ProductCardFields
+        }
+      }
+      ${PRODUCT_CARD_FRAGMENT}
+    `,
+    variables: { handle },
+  })
+
+  return data.productByHandle
+}
+
+export async function getProductsByHandles(
+  handles: string[]
+): Promise<ShopifyProduct[]> {
+  const uniqueHandles = Array.from(new Set(handles.map((handle) => handle.trim()).filter(Boolean)))
+  const products = await Promise.all(
+    uniqueHandles.map((handle) => getProductCardByHandle(handle))
+  )
+
+  return products.filter((product): product is ShopifyProduct => product !== null)
+}
+
+export async function getRelatedProducts({
+  productType,
+  excludeHandle,
+  limit = 4,
+}: {
+  productType: string
+  excludeHandle: string
+  limit?: number
+}): Promise<ShopifyProduct[]> {
+  const page = await getProductsPage({
+    query: `product_type:"${escapeSearchValue(productType)}"`,
+    first: limit + 1,
+    fragment: PRODUCT_CARD_FRAGMENT,
+  })
+
+  return page.edges
+    .map((edge) => edge.node)
+    .filter((product) => product.handle !== excludeHandle)
+    .slice(0, limit)
 }
 
 // ---------- Cart Mutations ----------

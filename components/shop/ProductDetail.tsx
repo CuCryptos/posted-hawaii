@@ -4,8 +4,8 @@ import { useState, useMemo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { ShopifyProduct, ShopifyProductVariant } from '@/lib/shopify-types'
+import type { Launch } from '@/lib/launches'
 import { useCart } from '@/components/cart/CartProvider'
-import { DROPS } from '@/lib/drops'
 
 const COLOR_MAP: Record<string, string> = {
   Black: '#0D0D0D',
@@ -16,8 +16,14 @@ const COLOR_MAP: Record<string, string> = {
   White: '#FFFFFF',
 }
 
-export function ProductDetail({ product }: { product: ShopifyProduct }) {
-  const { addToCart, loading } = useCart()
+export function ProductDetail({
+  product,
+  launch,
+}: {
+  product: ShopifyProduct
+  launch?: Launch
+}) {
+  const { addToCart, loading, pendingTarget, error, clearError } = useCart()
   const variants = product.variants.edges.map((e) => e.node)
   const images = product.images.edges.map((e) => e.node)
 
@@ -70,18 +76,18 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
 
   async function handleAddToCart() {
     if (!selectedVariant || isSoldOut) return
-    await addToCart(selectedVariant.id)
-    setAddedToCart(true)
-    setTimeout(() => setAddedToCart(false), 1500)
+    clearError()
+    const didAdd = await addToCart(selectedVariant.id)
+    if (didAdd) {
+      setAddedToCart(true)
+      setTimeout(() => setAddedToCart(false), 1500)
+    }
   }
 
   const colorOption = options.find((o) => o.name === 'Color')
   const sizeOption = options.find((o) => o.name === 'Size')
 
   // Drop label
-  const productTags = product.tags.map((t) => t.toLowerCase())
-  const matchedDrop = DROPS.find((d) => productTags.includes(d.tag))
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
       {/* Left — Gallery */}
@@ -163,9 +169,9 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
       {/* Right — Product Info */}
       <div className="lg:sticky lg:top-28 lg:self-start">
         {/* Collection label */}
-        {matchedDrop && (
+        {launch && (
           <p className="font-display text-xs font-medium uppercase tracking-[0.2em] text-asphalt/50 mb-2">
-            {matchedDrop.collection.replace('_', ' ')}
+            {launch.collection.replace('_', ' ')}
           </p>
         )}
 
@@ -268,10 +274,15 @@ export function ProductDetail({ product }: { product: ShopifyProduct }) {
             ? 'SOLD OUT'
             : addedToCart
               ? 'ADDED \u2713'
-              : loading
+              : loading && pendingTarget === selectedVariant?.id
                 ? 'ADDING...'
                 : 'ADD TO CART'}
         </button>
+        {error && (
+          <p className="mt-3 font-body text-sm text-lava">
+            {error}
+          </p>
+        )}
 
         {/* Tabs — Description / Fit / Shipping */}
         <div className="mt-8">

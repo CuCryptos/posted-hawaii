@@ -4,7 +4,7 @@
  * - Sets titles, descriptions, tags, and pricing
  * - Does NOT upload artwork (user approves manually)
  * - Does NOT publish (user publishes manually)
- * - Outputs Printify product IDs for wiring into lib/products.ts
+ * - Outputs Printify product IDs for manual record-keeping if needed
  *
  * Usage:
  *   npx tsx scripts/create-printify-drafts.ts
@@ -331,7 +331,7 @@ async function main() {
   }
 
   console.log('\n========================================')
-  console.log('RESULTS — Add these to lib/products.ts:')
+  console.log('RESULTS — Record these Printify IDs if needed:')
   console.log('========================================\n')
 
   for (const r of results) {

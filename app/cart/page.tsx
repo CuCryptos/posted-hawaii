@@ -8,7 +8,16 @@ import { Container } from '@/components/ui/Container'
 import { useCart } from '@/components/cart/CartProvider'
 
 export default function CartPage() {
-  const { cart, loading, updateQuantity, removeItem } = useCart()
+  const {
+    cart,
+    loading,
+    initializing,
+    error,
+    pendingTarget,
+    clearError,
+    updateQuantity,
+    removeItem,
+  } = useCart()
   const lines = cart?.lines.edges.map((e) => e.node) ?? []
 
   return (
@@ -21,7 +30,28 @@ export default function CartPage() {
             Your Bag
           </h1>
 
-          {lines.length === 0 ? (
+          {error && (
+            <div className="mt-6 flex items-start justify-between gap-4 border border-lava/20 bg-lava/5 px-4 py-3">
+              <p className="font-body text-[14px] text-lava">
+                {error}
+              </p>
+              <button
+                type="button"
+                onClick={clearError}
+                className="font-display text-[10px] uppercase tracking-widest text-lava/70 hover:text-lava transition-colors"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
+          {initializing ? (
+            <div className="mt-12 text-center">
+              <p className="font-body italic text-asphalt/40">
+                Loading your bag...
+              </p>
+            </div>
+          ) : lines.length === 0 ? (
             <div className="mt-12 text-center">
               <p className="font-body italic text-asphalt/40">
                 Your bag is empty.
@@ -69,6 +99,11 @@ export default function CartPage() {
 
                       {/* Quantity controls */}
                       <div className="flex items-center gap-3 mt-3">
+                        {loading && pendingTarget === line.id && (
+                          <span className="font-display text-[10px] uppercase tracking-widest text-asphalt/40">
+                            Updating...
+                          </span>
+                        )}
                         <button
                           onClick={() => updateQuantity(line.id, line.quantity - 1)}
                           disabled={loading}
