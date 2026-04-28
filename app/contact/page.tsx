@@ -7,11 +7,54 @@ import { Container } from '@/components/ui/Container'
 import { PageHero } from '@/components/ui/PageHero'
 
 export default function ContactPage() {
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [company, setCompany] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSubmitted(true)
+
+    setSubmitting(true)
+    setError('')
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message,
+          company,
+        }),
+      })
+
+      const payload = await response.json()
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? 'Unable to send your message right now.')
+      }
+
+      setName('')
+      setEmail('')
+      setMessage('')
+      setCompany('')
+      setSubmitted(true)
+    } catch (submissionError) {
+      setError(
+        submissionError instanceof Error
+          ? submissionError.message
+          : 'Unable to send your message right now.'
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -33,41 +76,76 @@ export default function ContactPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt block mb-2">
+                  <label
+                    htmlFor="contact-name"
+                    className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt block mb-2"
+                  >
                     Name
                   </label>
                   <input
+                    id="contact-name"
                     type="text"
                     required
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    autoComplete="name"
                     className="w-full px-4 py-3 bg-transparent border border-asphalt/20 font-display text-[13px] text-asphalt placeholder:text-asphalt/30 focus:outline-none focus:border-coral transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt block mb-2">
+                  <label
+                    htmlFor="contact-email"
+                    className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt block mb-2"
+                  >
                     Email
                   </label>
                   <input
+                    id="contact-email"
                     type="email"
                     required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
                     className="w-full px-4 py-3 bg-transparent border border-asphalt/20 font-display text-[13px] text-asphalt placeholder:text-asphalt/30 focus:outline-none focus:border-coral transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt block mb-2">
+                  <label
+                    htmlFor="contact-message"
+                    className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt block mb-2"
+                  >
                     Message
                   </label>
                   <textarea
+                    id="contact-message"
                     required
                     rows={5}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
                     className="w-full px-4 py-3 bg-transparent border border-asphalt/20 font-display text-[13px] text-asphalt placeholder:text-asphalt/30 focus:outline-none focus:border-coral transition-colors resize-none"
                   />
                 </div>
+                <input
+                  type="text"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  className="hidden"
+                  aria-hidden="true"
+                />
                 <button
                   type="submit"
+                  disabled={submitting}
                   className="w-full bg-coral text-white font-display font-bold text-[11px] uppercase tracking-widest py-4 hover:bg-coral/90 transition-colors"
                 >
-                  Send
+                  {submitting ? 'Sending...' : 'Send'}
                 </button>
+                {error && (
+                  <p className="font-body text-[14px] text-lava">
+                    {error}
+                  </p>
+                )}
               </form>
             )}
 
@@ -76,7 +154,7 @@ export default function ContactPage() {
                 Email
               </p>
               <p className="font-body text-[14px] text-asphalt/60 mt-1">
-                hello@postedhi.com
+                info@postedhi.com
               </p>
 
               <p className="font-display font-bold text-[11px] uppercase tracking-widest text-asphalt mt-6">
