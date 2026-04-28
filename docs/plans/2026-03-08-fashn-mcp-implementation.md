@@ -1,3 +1,11 @@
+---
+project: "POSTED HAWAI'I"
+type: "implementation-plan"
+module: "FASHN MCP"
+created: "2026-03-08"
+tags: [posted, fashn, mcp, plan, implementation]
+---
+
 # fashn-mcp Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.

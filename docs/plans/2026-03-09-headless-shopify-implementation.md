@@ -1,3 +1,11 @@
+---
+project: "POSTED HAWAI'I"
+type: "implementation-plan"
+module: "Headless Shopify"
+created: "2026-03-09"
+tags: [posted, shopify, migration, plan, implementation]
+---
+
 # Headless Shopify Migration Implementation Plan
 
 > **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.

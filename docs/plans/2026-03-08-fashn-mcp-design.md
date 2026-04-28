@@ -1,3 +1,11 @@
+---
+project: "POSTED HAWAI'I"
+type: "design"
+module: "FASHN MCP"
+created: "2026-03-08"
+tags: [posted, fashn, mcp, plan, design]
+---
+
 # fashn-mcp Design
 
 ## Goal
