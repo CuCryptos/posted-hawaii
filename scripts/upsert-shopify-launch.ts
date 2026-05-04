@@ -2,6 +2,7 @@ import path from 'node:path'
 import process from 'node:process'
 import dotenv from 'dotenv'
 import { LAUNCHES } from '@/lib/launches'
+import { Bus } from '@/lib/quine-bus'
 
 dotenv.config({ path: '.env.local' })
 dotenv.config()
@@ -311,6 +312,31 @@ async function main() {
   console.log(
     `Upserted ${data.metaobjectUpsert.metaobject.type}:${data.metaobjectUpsert.metaobject.handle}`
   )
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '') || 'https://postedhi.com'
+  const launchUrl = `${siteUrl}/drops/${data.metaobjectUpsert.metaobject.handle}`
+
+  if (process.env.QUINE_BUS_URL && process.env.QUINE_BUS_KEY) {
+    try {
+      const bus = Bus.fromEnv('cli:script:posted-hawaii')
+      const emitted = await bus.emit({
+        event_type: 'posted.content.published',
+        severity: 'info',
+        payload: {
+          listing_id: data.metaobjectUpsert.metaobject.id,
+          platform: 'shopify',
+          url: launchUrl,
+          metaobject_type: data.metaobjectUpsert.metaobject.type,
+          handle: data.metaobjectUpsert.metaobject.handle,
+        },
+      })
+      console.log(`Emitted posted.content.published to Quine bus: ${emitted.id}`)
+    } catch (error) {
+      console.warn(
+        `Quine bus emit failed (non-fatal): ${error instanceof Error ? error.message : String(error)}`
+      )
+    }
+  }
 
   if (missingBasenames.length > 0) {
     console.warn('')
